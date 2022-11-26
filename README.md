@@ -2,7 +2,7 @@
 
 Creating a new release using the labels from the Pul Requests
 
-## How to use
+## 🚀 How to use
 
 ### Create label
 
