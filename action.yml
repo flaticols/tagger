@@ -1,0 +1,15 @@
+name: 'Tagger'
+description: 'Creating a new release using the labels from the Pul Request'
+author: 'Denis Panfilov'
+inputs:
+  github-token:
+    description: The GitHub token used to create an authenticated client.
+    required: false
+    default: ${{ github.token }}
+  pr_number:
+    description: PR number
+    required: false
+    default: ${{ github.event.number }}
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
