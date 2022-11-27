@@ -6,7 +6,7 @@ const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi
 const LABELS: {name: string; description: string; color: string}[] = [
   {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'ff0000'},
   {name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'ff0000'},
-  {name: 'Patch', description: 'Patch version update', color: 'ff0000'}
+  {name: 'Patch', description: 'Patch version update', color: '#836C76'}
 ]
 
 const {token, pr_number} = getInputs()

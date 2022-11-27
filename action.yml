@@ -13,4 +13,4 @@ inputs:
 runs:
   using: 'node16'
   main: 'dist/main/index.js'
-  pre: 'dist/setup/setup.js'
+  pre: 'dist/setup/index.js'
