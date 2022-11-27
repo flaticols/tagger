@@ -6,11 +6,11 @@ inputs:
     description: The GitHub token used to create an authenticated client.
     required: false
     default: ${{ github.token }}
-  pr_number:
+  pr-number:
     description: PR number
     required: false
     default: ${{ github.event.number }}
-  default_tag:
+  default-tag:
     description: Default tag
     required: false
     default: v0.0.0

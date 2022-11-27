@@ -91,15 +91,19 @@ export function getNewTag(ver: SemVerUpdate, tags: string[]): string {
 }
 
 export async function createRelease(tag: string): Promise<void> {
-  await octokit.rest.repos.createRelease({
-    owner: gh.context.repo.owner,
-    repo: gh.context.repo.repo,
-    tag_name: tag,
-    name: tag,
-    draft: false,
-    prerelease: false,
-    generate_release_notes: true
-  })
+  try {
+    await octokit.rest.repos.createRelease({
+      owner: gh.context.repo.owner,
+      repo: gh.context.repo.repo,
+      tag_name: tag,
+      name: tag,
+      draft: false,
+      prerelease: false,
+      generate_release_notes: true
+    })
+  } catch (e) {
+    core.error(`Create release error: ${(e as Error).message}`)
+  }
 }
 
 export async function updateRelease(release_id: number, tag: string): Promise<void> {

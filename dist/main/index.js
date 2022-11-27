@@ -30,8 +30,8 @@ exports.getInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 function getInputs() {
     const token = core.getInput('github-token', { required: true });
-    const pr_number = parseInt(core.getInput('pr_number', { required: true }));
-    const default_tag = core.getInput('default_tag', { required: true });
+    const pr_number = parseInt(core.getInput('pr-number', { required: true }));
+    const default_tag = core.getInput('default-tag', { required: true });
     return { token, pr_number, default_tag };
 }
 exports.getInputs = getInputs;
@@ -218,15 +218,20 @@ function getNewTag(ver, tags) {
 exports.getNewTag = getNewTag;
 function createRelease(tag) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.repos.createRelease({
-            owner: gh.context.repo.owner,
-            repo: gh.context.repo.repo,
-            tag_name: tag,
-            name: tag,
-            draft: false,
-            prerelease: false,
-            generate_release_notes: true
-        });
+        try {
+            yield octokit.rest.repos.createRelease({
+                owner: gh.context.repo.owner,
+                repo: gh.context.repo.repo,
+                tag_name: tag,
+                name: tag,
+                draft: false,
+                prerelease: false,
+                generate_release_notes: true
+            });
+        }
+        catch (e) {
+            core.error(`Create release error: ${e.message}`);
+        }
     });
 }
 exports.createRelease = createRelease;

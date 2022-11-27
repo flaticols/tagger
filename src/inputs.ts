@@ -28,7 +28,7 @@ export type Label = components['schemas']['label']
 
 export function getInputs(): ActionInput {
   const token = core.getInput('github-token', {required: true})
-  const pr_number = parseInt(core.getInput('pr_number', {required: true}))
-  const default_tag = core.getInput('default_tag', {required: true})
+  const pr_number = parseInt(core.getInput('pr-number', {required: true}))
+  const default_tag = core.getInput('default-tag', {required: true})
   return {token, pr_number, default_tag}
 }
