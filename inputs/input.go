@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	gha "github.com/sethvargo/go-githubactions"
+	gha "action.com/sethvargo/go-githubactions"
 )
 
 type Inputs struct {
@@ -24,7 +24,7 @@ func GetInputs() (Inputs, error) {
 	}
 
 	return Inputs{
-		GitHubToken:       gha.GetInput("github-token"),
+		GitHubToken:       gha.GetInput("action-token"),
 		PullRequestNumber: prNumber,
 		DefaultTag:        gha.GetInput("default-tag"),
 		TagPattern:        gha.GetInput("tag-pattern"),
