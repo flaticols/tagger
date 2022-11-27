@@ -4,9 +4,9 @@ import {Label, RepositoryTags, SemVerUpdate, getInputs} from './inputs'
 
 const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi
 const LABELS: {name: string; description: string; color: string}[] = [
-  {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: '#FE9B2B'},
-  {name: 'Minor', description: 'Minor version update. Patch will be reset', color: '#C4D174'},
-  {name: 'Patch', description: 'Patch version update', color: '#836C76'}
+  {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'FE9B2B'},
+  {name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'C4D174'},
+  {name: 'Patch', description: 'Patch version update', color: '836C76'}
 ]
 
 const {token, pr_number} = getInputs()
@@ -55,6 +55,7 @@ export async function getLatestTag(): Promise<string[]> {
       }
     }`)
 
+  core.notice(JSON.stringify(refTags))
   const tags = refTags.repository.refs.edges.map(x => x.node.name)
 
   if (tags.length === 0) {
@@ -94,6 +95,7 @@ export async function createRelease(tag: string): Promise<void> {
     tag_name: tag,
     name: tag,
     draft: false,
+    overwrite: true,
     prerelease: false,
     generate_release_notes: false
   })
