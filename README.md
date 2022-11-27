@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: flaticols/tagger
+      - uses: flaticols/tagger@v0.5.0
 ```
 
 ### Overrite inputs:
