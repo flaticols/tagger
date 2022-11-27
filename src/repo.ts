@@ -4,8 +4,8 @@ import {Label, RepositoryTags, SemVerUpdate, getInputs} from './inputs'
 
 const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi
 const LABELS: {name: string; description: string; color: string}[] = [
-  {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'ff0000'},
-  {name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'ff0000'},
+  {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: '#FE9B2B'},
+  {name: 'Minor', description: 'Minor version update. Patch will be reset', color: '#C4D174'},
   {name: 'Patch', description: 'Patch version update', color: '#836C76'}
 ]
 
@@ -116,6 +116,6 @@ async function createLabel(name: string, description: string, color: string): Pr
     name,
     description,
     color,
-    overwrite: false
+    overwrite: true
   })
 }
