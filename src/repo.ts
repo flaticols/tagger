@@ -75,16 +75,15 @@ export function getNewTag(ver: SemVerUpdate, tags: string[]): string {
 
   if (ver.Major) {
     major++
+    return `${major}.0.0`
   }
 
   if (ver.Minor) {
     minor++
+    return `${major}.${minor}.0`
   }
 
-  if (ver.Patch) {
-    patch++
-  }
-
+  patch++
   return `${major}.${minor}.${patch}`
 }
 
