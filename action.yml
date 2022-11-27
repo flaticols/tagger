@@ -14,9 +14,9 @@ inputs:
     description: Default tag
     required: false
     default: v0.0.0
-  runs:
-    using: docker
-    image: Dockerfile
+runs:
+  using: docker
+  image: Dockerfile
 # runs:
 #   using: 'node16'
 #   main: 'dist/main/index.js'
