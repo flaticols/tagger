@@ -4,6 +4,26 @@ Creating a new release using the labels from the Pull Requests
 
 ## 🚀 How to use
 
+Add a one of `major`, `minor` or `path` label to your PR and merge it.
+
+-  **Major** - reset `minor` and `patch`
+-  **Minor** - reset `patch`
+
+**Examples**
+
+##### Just add `patch` label to PR:
+  With default settings you will get release: v0.0.1
+
+##### Add `patch` and I have latest tag `v0.4.10`
+  Result: release with tag and name `v0.4.11`
+  
+##### Add `Minor` and I have latest tag `v0.4.10`
+  Result: release with tag and name `v0.5.0`
+  
+##### Add `Major` and I have latest tag `v0.4.10`
+  Result: release with tag and name `v1.0.0`
+
+
 ### First run
 
 #### Labels
@@ -40,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: flaticols/tagger
+      - uses: flaticols/tagger@v0.5.0
 ```
 
 ### Overrite inputs:
