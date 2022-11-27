@@ -77,6 +77,7 @@ const repo = __importStar(__nccwpck_require__(8139));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            yield repo.createLabels();
             const pr = yield repo.getPR();
             const ver = repo.getRequiredLabels(pr.data.labels);
             const tags = yield repo.getLatestTag();
@@ -129,10 +130,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createRelease = exports.getNewTag = exports.getLatestTag = exports.getRequiredLabels = exports.getPR = void 0;
+exports.createLabels = exports.createRelease = exports.getNewTag = exports.getLatestTag = exports.getRequiredLabels = exports.getPR = void 0;
+const core = __importStar(__nccwpck_require__(2186));
 const gh = __importStar(__nccwpck_require__(5438));
 const inputs_1 = __nccwpck_require__(6180);
 const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi;
+const LABELS = [
+    { name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'ff0000' },
+    { name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'ff0000' },
+    { name: 'Patch', description: 'Patch version update', color: 'ff0000' }
+];
 const { token, pr_number } = (0, inputs_1.getInputs)();
 const octokit = gh.getOctokit(token);
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -220,6 +227,31 @@ function createRelease(tag) {
     });
 }
 exports.createRelease = createRelease;
+function createLabels() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            for (const label of LABELS) {
+                yield createLabel(label.name, label.description, label.color);
+            }
+        }
+        catch (e) {
+            core.warning(`Failed to create labels: ${e}`);
+        }
+    });
+}
+exports.createLabels = createLabels;
+function createLabel(name, description, color) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.rest.issues.createLabel({
+            owner: gh.context.repo.owner,
+            repo: gh.context.repo.repo,
+            name,
+            description,
+            color,
+            overwrite: false
+        });
+    });
+}
 
 
 /***/ }),
