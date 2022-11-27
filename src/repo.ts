@@ -2,6 +2,11 @@ import * as gh from '@actions/github'
 import {Label, RepositoryTags, SemVerUpdate, getInputs} from './inputs'
 
 const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi
+const LABELS: {name: string; description: string; color: string}[] = [
+  {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'ff0000'},
+  {name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'ff0000'},
+  {name: 'Patch', description: 'Patch version update', color: 'ff0000'}
+]
 
 const {token, pr_number} = getInputs()
 const octokit = gh.getOctokit(token)
@@ -90,5 +95,22 @@ export async function createRelease(tag: string): Promise<void> {
     draft: false,
     prerelease: false,
     generate_release_notes: false
+  })
+}
+
+export async function createLabels(): Promise<void> {
+  for (const label of LABELS) {
+    await createLabel(label.name, label.description, label.color)
+  }
+}
+
+async function createLabel(name: string, description: string, color: string): Promise<void> {
+  await octokit.rest.issues.createLabel({
+    owner: gh.context.repo.owner,
+    repo: gh.context.repo.repo,
+    name,
+    description,
+    color,
+    overwrite: false
   })
 }
