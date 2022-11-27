@@ -55,13 +55,15 @@ export async function getLatestTag(): Promise<string[]> {
       }
     }`)
 
-  core.notice(JSON.stringify(refTags))
+  core.notice(`Edges: ${JSON.stringify(refTags)}`)
   const tags = refTags.repository.refs.edges.map(x => x.node.name)
 
   if (tags.length === 0) {
-    tags.push('0.0.0')
+    const {default_tag} = getInputs()
+    tags.push(default_tag)
   }
 
+  core.notice(`Tags: ${JSON.stringify(tags)}`)
   return tags
 }
 
@@ -95,19 +97,32 @@ export async function createRelease(tag: string): Promise<void> {
     tag_name: tag,
     name: tag,
     draft: false,
-    overwrite: true,
     prerelease: false,
-    generate_release_notes: false
+    generate_release_notes: true
+  })
+}
+
+export async function updateRelease(release_id: number, tag: string): Promise<void> {
+  await octokit.rest.repos.updateRelease({
+    owner: gh.context.repo.owner,
+    repo: gh.context.repo.repo,
+    tag_name: tag,
+    target_cmmitish: 'master',
+    name: tag,
+    draft: false,
+    prerelease: false,
+    release_id,
+    generate_release_notes: true
   })
 }
 
 export async function createLabels(): Promise<void> {
-  try {
-    for (const label of LABELS) {
+  for (const label of LABELS) {
+    try {
       await createLabel(label.name, label.description, label.color)
+    } catch (e) {
+      await updateLabel(label.name, label.description, label.color)
     }
-  } catch (e) {
-    core.warning(`Failed to create labels: ${e}`)
   }
 }
 
@@ -117,7 +132,17 @@ async function createLabel(name: string, description: string, color: string): Pr
     repo: gh.context.repo.repo,
     name,
     description,
-    color,
-    overwrite: true
+    color
+  })
+}
+
+async function updateLabel(name: string, description: string, color: string): Promise<void> {
+  await octokit.rest.issues.updateLabel({
+    owner: gh.context.repo.owner,
+    repo: gh.context.repo.repo,
+    name,
+    new_name: name,
+    description,
+    color
   })
 }

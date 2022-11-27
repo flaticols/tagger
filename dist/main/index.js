@@ -31,7 +31,8 @@ const core = __importStar(__nccwpck_require__(2186));
 function getInputs() {
     const token = core.getInput('github-token', { required: true });
     const pr_number = parseInt(core.getInput('pr_number', { required: true }));
-    return { token, pr_number };
+    const default_tag = core.getInput('default_tag', { required: true });
+    return { token, pr_number, default_tag };
 }
 exports.getInputs = getInputs;
 
@@ -129,7 +130,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createLabels = exports.createRelease = exports.getNewTag = exports.getLatestTag = exports.getRequiredLabels = exports.getPR = void 0;
+exports.createLabels = exports.updateRelease = exports.createRelease = exports.getNewTag = exports.getLatestTag = exports.getRequiredLabels = exports.getPR = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const gh = __importStar(__nccwpck_require__(5438));
 const inputs_1 = __nccwpck_require__(6180);
@@ -186,11 +187,13 @@ function getLatestTag() {
         }
       }
     }`);
-        core.notice(JSON.stringify(refTags));
+        core.notice(`Edges: ${JSON.stringify(refTags)}`);
         const tags = refTags.repository.refs.edges.map(x => x.node.name);
         if (tags.length === 0) {
-            tags.push('0.0.0');
+            const { default_tag } = (0, inputs_1.getInputs)();
+            tags.push(default_tag);
         }
+        core.notice(`Tags: ${JSON.stringify(tags)}`);
         return tags;
     });
 }
@@ -221,22 +224,37 @@ function createRelease(tag) {
             tag_name: tag,
             name: tag,
             draft: false,
-            overwrite: true,
             prerelease: false,
-            generate_release_notes: false
+            generate_release_notes: true
         });
     });
 }
 exports.createRelease = createRelease;
+function updateRelease(release_id, tag) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.rest.repos.updateRelease({
+            owner: gh.context.repo.owner,
+            repo: gh.context.repo.repo,
+            tag_name: tag,
+            target_cmmitish: 'master',
+            name: tag,
+            draft: false,
+            prerelease: false,
+            release_id,
+            generate_release_notes: true
+        });
+    });
+}
+exports.updateRelease = updateRelease;
 function createLabels() {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            for (const label of LABELS) {
+        for (const label of LABELS) {
+            try {
                 yield createLabel(label.name, label.description, label.color);
             }
-        }
-        catch (e) {
-            core.warning(`Failed to create labels: ${e}`);
+            catch (e) {
+                yield updateLabel(label.name, label.description, label.color);
+            }
         }
     });
 }
@@ -248,8 +266,19 @@ function createLabel(name, description, color) {
             repo: gh.context.repo.repo,
             name,
             description,
-            color,
-            overwrite: true
+            color
+        });
+    });
+}
+function updateLabel(name, description, color) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.rest.issues.updateLabel({
+            owner: gh.context.repo.owner,
+            repo: gh.context.repo.repo,
+            name,
+            new_name: name,
+            description,
+            color
         });
     });
 }

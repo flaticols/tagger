@@ -10,6 +10,10 @@ inputs:
     description: PR number
     required: false
     default: ${{ github.event.number }}
+  default_tag:
+    description: Default tag
+    required: false
+    default: v0.0.0
 runs:
   using: 'node16'
   main: 'dist/main/index.js'
