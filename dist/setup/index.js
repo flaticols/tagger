@@ -130,13 +130,11 @@ function getLatestTag() {
         }
       }
     }`);
-        core.notice(`Edges: ${JSON.stringify(refTags)}`);
         const tags = refTags.repository.refs.edges.map(x => x.node.name);
         if (tags.length === 0) {
             const { default_tag } = (0, inputs_1.getInputs)();
             tags.push(default_tag);
         }
-        core.notice(`Tags: ${JSON.stringify(tags)}`);
         return tags;
     });
 }
@@ -149,13 +147,13 @@ function getNewTag(ver, tags) {
     let patch = parseInt(parts[3]);
     if (ver.Major) {
         major++;
+        return `${major}.0.0`;
     }
     if (ver.Minor) {
         minor++;
+        return `${major}.${minor}.0`;
     }
-    if (ver.Patch) {
-        patch++;
-    }
+    patch++;
     return `${major}.${minor}.${patch}`;
 }
 exports.getNewTag = getNewTag;
