@@ -55,7 +55,6 @@ export async function getLatestTag(): Promise<string[]> {
       }
     }`)
 
-  core.notice(`Edges: ${JSON.stringify(refTags)}`)
   const tags = refTags.repository.refs.edges.map(x => x.node.name)
 
   if (tags.length === 0) {
@@ -63,7 +62,6 @@ export async function getLatestTag(): Promise<string[]> {
     tags.push(default_tag)
   }
 
-  core.notice(`Tags: ${JSON.stringify(tags)}`)
   return tags
 }
 
