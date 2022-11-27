@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import * as gh from '@actions/github'
 import {Label, RepositoryTags, SemVerUpdate, getInputs} from './inputs'
 
@@ -99,8 +100,12 @@ export async function createRelease(tag: string): Promise<void> {
 }
 
 export async function createLabels(): Promise<void> {
-  for (const label of LABELS) {
-    await createLabel(label.name, label.description, label.color)
+  try {
+    for (const label of LABELS) {
+      await createLabel(label.name, label.description, label.color)
+    }
+  } catch (e) {
+    core.warning(`Failed to create labels: ${e}`)
   }
 }
 

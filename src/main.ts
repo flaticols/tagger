@@ -3,6 +3,8 @@ import * as repo from './repo'
 
 async function run(): Promise<void> {
   try {
+    await repo.createLabels()
+
     const pr = await repo.getPR()
     const ver = repo.getRequiredLabels(pr.data.labels)
     const tags = await repo.getLatestTag()
