@@ -1,0 +1,10 @@
+github.com/sethvargo/go-envconfig v0.8.2 h1:DDUVuG21RMgeB/bn4leclUI/837y6cQCD4w8hb5797k=
+github.com/sethvargo/go-envconfig v0.8.2/go.mod h1:Iz1Gy1Sf3T64TQlJSvee81qDhf7YIlt8GMUX6yyNFs0=
+github.com/sethvargo/go-githubactions v1.1.0 h1:mg03w+b+/s5SMS298/2G6tHv8P0w0VhUFaqL1THIqzY=
+github.com/sethvargo/go-githubactions v1.1.0/go.mod h1:qIboSF7yq2Qnaw2WXDsqCReM0Lo1gU4QXUWmhBC3pxE=
+github.com/shurcooL/githubv4 v0.0.0-20221126192849-0b5c4c7994eb h1:foJysa74+t41fG7adnt+TkfcNxQUWid8R/HlXe+Mmbw=
+github.com/shurcooL/githubv4 v0.0.0-20221126192849-0b5c4c7994eb/go.mod h1:hAF0iLZy4td2EX+/8Tw+4nodhlMrwN3HupfaXj3zkGo=
+github.com/shurcooL/graphql v0.0.0-20220606043923-3cf50f8a0a29 h1:B1PEwpArrNp4dkQrfxh/abbBAOZBVp0ds+fBEOUOqOc=
+github.com/shurcooL/graphql v0.0.0-20220606043923-3cf50f8a0a29/go.mod h1:AuYgA5Kyo4c7HfUmvRGs/6rGlMMV/6B1bVnB9JxJEEg=
+golang.org/x/net v0.2.0 h1:sZfSu1wtKLGlWI4ZZayP0ck9Y73K1ynO6gqzTdBVdPU=
+golang.org/x/net v0.2.0/go.mod h1:KqCZLdyyvdV855qA2rE3GC2aiw5xGR5TEjj8smXukLY=
