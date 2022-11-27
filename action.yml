@@ -14,10 +14,13 @@ inputs:
     description: Default tag
     required: false
     default: v0.0.0
-runs:
-  using: 'node16'
-  main: 'dist/main/index.js'
-  pre: 'dist/setup/index.js'
+  runs:
+    using: docker
+    image: Dockerfile
+# runs:
+#   using: 'node16'
+#   main: 'dist/main/index.js'
+#   pre: 'dist/setup/index.js'
 branding:
   icon: 'tag'
   color: 'orange'
