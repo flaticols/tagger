@@ -1,5 +1,5 @@
 name: 'Tagger'
-description: 'Creating a new release using the labels from the Pul Request'
+description: 'Creating a new release using the labels from the Pull Request'
 author: 'Denis Panfilov'
 inputs:
   github-token:

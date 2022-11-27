@@ -1,6 +1,6 @@
 # Tagger
 
-Creating a new release using the labels from the Pul Requests
+Creating a new release using the labels from the Pull Requests
 
 ## 🚀 How to use
 
