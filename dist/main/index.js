@@ -135,9 +135,9 @@ const gh = __importStar(__nccwpck_require__(5438));
 const inputs_1 = __nccwpck_require__(6180);
 const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi;
 const LABELS = [
-    { name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'ff0000' },
-    { name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'ff0000' },
-    { name: 'Patch', description: 'Patch version update', color: 'ff0000' }
+    { name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'FE9B2B' },
+    { name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'C4D174' },
+    { name: 'Patch', description: 'Patch version update', color: '836C76' }
 ];
 const { token, pr_number } = (0, inputs_1.getInputs)();
 const octokit = gh.getOctokit(token);
@@ -186,6 +186,7 @@ function getLatestTag() {
         }
       }
     }`);
+        core.notice(JSON.stringify(refTags));
         const tags = refTags.repository.refs.edges.map(x => x.node.name);
         if (tags.length === 0) {
             tags.push('0.0.0');
@@ -220,6 +221,7 @@ function createRelease(tag) {
             tag_name: tag,
             name: tag,
             draft: false,
+            overwrite: true,
             prerelease: false,
             generate_release_notes: false
         });
@@ -247,7 +249,7 @@ function createLabel(name, description, color) {
             name,
             description,
             color,
-            overwrite: false
+            overwrite: true
         });
     });
 }
