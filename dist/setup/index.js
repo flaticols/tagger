@@ -30,67 +30,11 @@ exports.getInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 function getInputs() {
     const token = core.getInput('github-token', { required: true });
-    const pr_number = parseInt(core.getInput('pr_number', { required: true }));
-    return { token, pr_number };
+    const pr_number = parseInt(core.getInput('pr-number', { required: true }));
+    const default_tag = core.getInput('default-tag', { required: true });
+    return { token, pr_number, default_tag };
 }
 exports.getInputs = getInputs;
-
-
-/***/ }),
-
-/***/ 3109:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
-const repo = __importStar(__nccwpck_require__(8139));
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const pr = yield repo.getPR();
-            const ver = repo.getRequiredLabels(pr.data.labels);
-            const tags = yield repo.getLatestTag();
-            const newVersion = repo.getNewTag(ver, tags);
-            core.notice(`Next release: v${newVersion}`);
-            repo.createRelease(`v${newVersion}`);
-        }
-        catch (error) {
-            if (error instanceof Error)
-                core.setFailed(JSON.stringify(error));
-        }
-    });
-}
-run();
 
 
 /***/ }),
@@ -129,10 +73,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createRelease = exports.getNewTag = exports.getLatestTag = exports.getRequiredLabels = exports.getPR = void 0;
+exports.createLabels = exports.updateRelease = exports.createRelease = exports.getNewTag = exports.getLatestTag = exports.getRequiredLabels = exports.getPR = void 0;
+const core = __importStar(__nccwpck_require__(2186));
 const gh = __importStar(__nccwpck_require__(5438));
 const inputs_1 = __nccwpck_require__(6180);
 const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi;
+const LABELS = [
+    { name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'FE9B2B' },
+    { name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'C4D174' },
+    { name: 'Patch', description: 'Patch version update', color: '836C76' }
+];
 const { token, pr_number } = (0, inputs_1.getInputs)();
 const octokit = gh.getOctokit(token);
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -180,10 +130,13 @@ function getLatestTag() {
         }
       }
     }`);
+        core.notice(`Edges: ${JSON.stringify(refTags)}`);
         const tags = refTags.repository.refs.edges.map(x => x.node.name);
         if (tags.length === 0) {
-            tags.push('0.0.0');
+            const { default_tag } = (0, inputs_1.getInputs)();
+            tags.push(default_tag);
         }
+        core.notice(`Tags: ${JSON.stringify(tags)}`);
         return tags;
     });
 }
@@ -208,18 +161,127 @@ function getNewTag(ver, tags) {
 exports.getNewTag = getNewTag;
 function createRelease(tag) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.repos.createRelease({
-            owner: gh.context.repo.owner,
-            repo: gh.context.repo.repo,
-            tag_name: tag,
-            name: tag,
-            draft: false,
-            prerelease: false,
-            generate_release_notes: false
-        });
+        try {
+            yield octokit.rest.repos.createRelease({
+                owner: gh.context.repo.owner,
+                repo: gh.context.repo.repo,
+                tag_name: tag,
+                name: tag,
+                draft: false,
+                prerelease: false,
+                generate_release_notes: true
+            });
+        }
+        catch (e) {
+            core.error(`Create release error: ${e.message}`);
+        }
     });
 }
 exports.createRelease = createRelease;
+function updateRelease(release_id, tag) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.rest.repos.updateRelease({
+            owner: gh.context.repo.owner,
+            repo: gh.context.repo.repo,
+            tag_name: tag,
+            target_cmmitish: 'master',
+            name: tag,
+            draft: false,
+            prerelease: false,
+            release_id,
+            generate_release_notes: true
+        });
+    });
+}
+exports.updateRelease = updateRelease;
+function createLabels() {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (const label of LABELS) {
+            try {
+                yield createLabel(label.name, label.description, label.color);
+            }
+            catch (e) {
+                yield updateLabel(label.name, label.description, label.color);
+            }
+        }
+    });
+}
+exports.createLabels = createLabels;
+function createLabel(name, description, color) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.rest.issues.createLabel({
+            owner: gh.context.repo.owner,
+            repo: gh.context.repo.repo,
+            name,
+            description,
+            color
+        });
+    });
+}
+function updateLabel(name, description, color) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.rest.issues.updateLabel({
+            owner: gh.context.repo.owner,
+            repo: gh.context.repo.repo,
+            name,
+            new_name: name,
+            description,
+            color
+        });
+    });
+}
+
+
+/***/ }),
+
+/***/ 7391:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const repo = __importStar(__nccwpck_require__(8139));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield repo.createLabels();
+        }
+        catch (error) {
+            if (error instanceof Error)
+                core.setFailed(JSON.stringify(error));
+        }
+    });
+}
+run();
 
 
 /***/ }),
@@ -9908,7 +9970,7 @@ module.exports = require("zlib");
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(3109);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(7391);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()
