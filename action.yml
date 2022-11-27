@@ -5,11 +5,11 @@ inputs:
   github-token:
     description: The GitHub token used to create an authenticated client.
     required: false
-    default: ${{ github.token }}
+    default: ${{ action.token }}
   pr-number:
     description: PR number
     required: false
-    default: ${{ github.event.number }}
+    default: ${{ action.event.number }}
   default-tag:
     description: Default tag
     required: false
