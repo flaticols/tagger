@@ -9,6 +9,7 @@ async function run(): Promise<void> {
 
     const newVersion = repo.getNewTag(ver, tags)
     core.notice(`Next release: v${newVersion}`)
+	core.setOutput('tag', newVersion)
 
     repo.createRelease(`v${newVersion}`)
   } catch (error) {
