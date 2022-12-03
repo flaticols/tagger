@@ -5,8 +5,8 @@ import (
 	"github.com/google/go-github/v48/github"
 )
 
-func (gh *Client) CreateRelease(tag, owner, repository string) error {
-	rel, _, err = gh.client.Repositories.CreateRelease(context.Background(), owner, repository, &github.RepositoryRelease{
+func (gh *Client) CreateRelease(tag, owner, repository string) (*github.RepositoryRelease, error) {
+	rel, _, err := gh.client.Repositories.CreateRelease(context.Background(), owner, repository, &github.RepositoryRelease{
 		TagName:              &tag,
 		Name:                 &tag,
 		Body:                 nil,
@@ -14,4 +14,6 @@ func (gh *Client) CreateRelease(tag, owner, repository string) error {
 		Prerelease:           nil,
 		GenerateReleaseNotes: true,
 	})
+
+	return rel, err
 }
