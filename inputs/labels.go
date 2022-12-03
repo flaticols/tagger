@@ -42,12 +42,19 @@ func GetNextVersionUpdate(labels []*github.Label) SemVerUpdate {
 	return sm
 }
 
+// GetNewTag returns a new tag based on the current tag and the SemVerUpdate
 func GetNewTag(tag string, ver SemVerUpdate) (string, error) {
 	tagPattern := regexp.MustCompile(`(?P<major>[0-9])\.(?P<minor>[0-9])\.(?P<patch>[0-9])`)
+	customTagPattern := regexp.MustCompile(`tag[\s:\-=](?P<tag>.*)`)
+
+	customTag := customTagPattern.FindStringSubmatch(tag)
+	if len(customTag) > 0 {
+		return customTag[1], nil
+	}
 
 	parts := tagPattern.FindStringSubmatch(tag)
 
-	paramsMap := make(Tag)
+	paramsMap := Tag{}
 	for i, name := range tagPattern.SubexpNames() {
 		if i > 0 && i <= len(parts) {
 			p, err := strconv.Atoi(parts[i])
@@ -55,24 +62,24 @@ func GetNewTag(tag string, ver SemVerUpdate) (string, error) {
 				return tag, err
 			}
 
-			paramsMap[name] = p
+			paramsMap.Set(TagType(name), p)
 		}
 	}
 
 	if ver.Major {
-		paramsMap["major"]++
-		paramsMap["minor"] = 0
-		paramsMap["patch"] = 0
+		paramsMap.Set(TagMajor, paramsMap.GetMajor()+1)
+		paramsMap.Set(TagMinor, 0)
+		paramsMap.Set(TagPatch, 0)
 
 		return paramsMap.String(), nil
 	}
 
 	if ver.Minor {
-		paramsMap["minor"]++
-		paramsMap["patch"] = 0
+		paramsMap.Set(TagMinor, paramsMap.GetMinor()+1)
+		paramsMap.Set(TagPatch, 0)
 		return paramsMap.String(), nil
 	}
 
-	paramsMap["patch"]++
+	paramsMap.Set(TagPatch, paramsMap.GetPatch()+1)
 	return paramsMap.String(), nil
 }

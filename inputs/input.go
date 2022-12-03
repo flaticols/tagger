@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	gha "action.com/sethvargo/go-githubactions"
+	gha "github.com/sethvargo/go-githubactions"
 )
 
 type Inputs struct {

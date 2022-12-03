@@ -27,3 +27,35 @@ func TestGetNewTag_Minor(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "v1.0.0", newTag)
 }
+
+func TestGetNewTag_Custom(t *testing.T) {
+	tag := "tag v0.4.3-beta"
+
+	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
+	require.NoError(t, err)
+	require.Equal(t, "v0.4.3-beta", newTag)
+}
+
+func TestGetNewTag_Custom1(t *testing.T) {
+	tag := "tag:v0.4.3-beta"
+
+	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
+	require.NoError(t, err)
+	require.Equal(t, "v0.4.3-beta", newTag)
+}
+
+func TestGetNewTag_Custom2(t *testing.T) {
+	tag := "tag-v0.4.3-beta"
+
+	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
+	require.NoError(t, err)
+	require.Equal(t, "v0.4.3-beta", newTag)
+}
+
+func TestGetNewTag_Custom3(t *testing.T) {
+	tag := "tag=v0.4.3-beta"
+
+	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
+	require.NoError(t, err)
+	require.Equal(t, "v0.4.3-beta", newTag)
+}
