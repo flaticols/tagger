@@ -83,7 +83,7 @@ function run() {
             const tags = yield repo.getLatestTag();
             const newVersion = repo.getNewTag(ver, tags);
             core.notice(`Next release: v${newVersion}`);
-			core.setOutput('tag', newVersion);
+	    core.setOutput('tag', `v${newVersion}`);
             repo.createRelease(`v${newVersion}`);
         }
         catch (error) {
