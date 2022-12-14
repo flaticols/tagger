@@ -17,7 +17,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
     Object.defineProperty(o, "default", { enumerable: true, value: v });
 }) : function(o, v) {
     o["default"] = v;
-});
+});AG
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -145,7 +145,9 @@ exports.createLabels = exports.updateRelease = exports.createRelease = exports.g
 const core = __importStar(__nccwpck_require__(2186));
 const gh = __importStar(__nccwpck_require__(5438));
 const inputs_1 = __nccwpck_require__(6180);
-const TAG_PATTERN = /v([0-9])\.([0-9])\.([0-9])/gi;
+
+const TAG_PATTERN = /v([0-9]+)\.([0-9]+)\.([0-9]+)/gi;
+	
 const LABELS = [
     { name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'FE9B2B' },
     { name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'C4D174' },
