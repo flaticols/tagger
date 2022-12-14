@@ -43,8 +43,9 @@ Default: `v0.0.0` -> first tag `v0.0.1`
 ### inputs
 
  - `github-token` - GitHub Token. Default `${{ github.token }}`
- - `pr_number` - GitHub Token. Default `${{ github.event.number }}`
- - `default_tag` - GitHub Token. Default `v0.0.0`
+ - `pr-number` - GitHub Token. Default `${{ github.event.number }}`
+ - `default-tag` - GitHub Token. Default `0.0.0`
+ - `prefix` - Tag prefix. Default `v`
 
 ### Add new GitHub Action Workflow file:
 
@@ -60,10 +61,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: flaticols/tagger@v0.5.0
+      - uses: flaticols/tagger@v1.0.0
 ```
 
-### Overrite inputs:
+### Override inputs:
 
 ```yaml
 name: 'Release'
@@ -79,7 +80,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           github-token: 'My token'
-          pr_number: 10
-          default_tag: '0.1.0'
-      - uses: flaticols/tagger
+          pr-number: 10
+          default-tag: '0.1.0'
+          prefix: "ver"
+      - uses: flaticols/tagger@v1.0.0
+```
+
+### Run locally
+
+```bash
+go run . do -o flaticols -r tagger -t $(gh auth token)
 ```

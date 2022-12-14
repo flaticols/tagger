@@ -6,56 +6,25 @@ import (
 )
 
 func TestGetNewTag_Patch(t *testing.T) {
-	tag := "v0.4.3"
+	tag := "0.4.3"
 
-	newTag, err := GetNewTag(tag, SemVerUpdate{Patch: true})
+	newTag, err := GetNewTag(tag, PullRequestLabels{Patch: true})
 	require.NoError(t, err)
-	require.Equal(t, "v0.4.4", newTag)
+	require.Equal(t, "0.4.4", newTag.String())
 }
 
 func TestGetNewTag_Major(t *testing.T) {
-	tag := "v0.4.3"
+	tag := "0.4.3"
 
-	newTag, err := GetNewTag(tag, SemVerUpdate{Minor: true, Patch: true})
+	newTag, err := GetNewTag(tag, PullRequestLabels{Minor: true, Patch: true})
 	require.NoError(t, err)
-	require.Equal(t, "v0.5.0", newTag)
+	require.Equal(t, "0.5.0", newTag.String())
 }
+
 func TestGetNewTag_Minor(t *testing.T) {
-	tag := "v0.4.3"
+	tag := "0.4.3"
 
-	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
+	newTag, err := GetNewTag(tag, PullRequestLabels{Major: true, Minor: true, Patch: true})
 	require.NoError(t, err)
-	require.Equal(t, "v1.0.0", newTag)
-}
-
-func TestGetNewTag_Custom(t *testing.T) {
-	tag := "tag v0.4.3-beta"
-
-	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
-	require.NoError(t, err)
-	require.Equal(t, "v0.4.3-beta", newTag)
-}
-
-func TestGetNewTag_Custom1(t *testing.T) {
-	tag := "tag:v0.4.3-beta"
-
-	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
-	require.NoError(t, err)
-	require.Equal(t, "v0.4.3-beta", newTag)
-}
-
-func TestGetNewTag_Custom2(t *testing.T) {
-	tag := "tag-v0.4.3-beta"
-
-	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
-	require.NoError(t, err)
-	require.Equal(t, "v0.4.3-beta", newTag)
-}
-
-func TestGetNewTag_Custom3(t *testing.T) {
-	tag := "tag=v0.4.3-beta"
-
-	newTag, err := GetNewTag(tag, SemVerUpdate{Major: true, Minor: true, Patch: true})
-	require.NoError(t, err)
-	require.Equal(t, "v0.4.3-beta", newTag)
+	require.Equal(t, "1.0.0", newTag.String())
 }

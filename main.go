@@ -1,50 +1,53 @@
 package main
 
 import (
-	gha "action.com/sethvargo/go-githubactions"
-	"github.com/flaticols/tagger/action"
+	"github.com/flaticols/tagger/commands"
+	"github.com/flaticols/tagger/gh"
 	"github.com/flaticols/tagger/inputs"
+	gha "github.com/sethvargo/go-githubactions"
+	"github.com/spf13/cobra"
 	"log"
 )
 
-type Opts struct {
-	GitHubAction string `command:"action-action" description:"GitHub Action"`
-}
-
-func main() {
-	gitHubContext, err := gha.Context()
-	if err != nil {
-		log.Fatalf("get GitHub context failed, %s", err.Error())
-	}
-
-	owner := gitHubContext.RepositoryOwner
-	repo := gitHubContext.Repository
-
+func main_old() {
 	params, err := inputs.GetInputs()
 
 	if err != nil {
 		log.Fatalf("get inputs failed, %s", err.Error())
 	}
 
-	client, err := action.NewGitHubClient(params.GitHubToken)
+	client, err := gh.NewGitHubClient(params.GitHubToken)
 	if err != nil {
 		log.Fatalf("failed to create GitHub client, %s", err.Error())
 	}
 
-	labels, err := client.GetPullRequestLabels(params.PullRequestNumber, owner, repo)
+	labels, err := client.GetPullRequestLabels(params.PullRequestNumber, params.Owner, params.Repository)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	ver := inputs.GetNextVersionUpdate(labels)
-	tag, err := client.GetLatestTag(owner, repo)
+
+	prLabels := inputs.GetPRLabels(labels)
+	latestTag, err := client.GetLatestTag(params.Owner, params.Repository)
 	if err != nil {
 		log.Fatalf("get latest tag failed, %s", err.Error())
 	}
 
-	newTag, err := inputs.GetNewTag(tag, ver)
+	newTag, err := inputs.GetNewTag(latestTag, prLabels)
 	if err != nil {
-		log.Printf("create new tag failed, %s", err.Error())
+		log.Printf("create new latestTag failed, %s", err.Error())
 	}
 
+	gha.Noticef("New latestTag: %s", newTag)
 	gha.Noticef("PR Number: %d, Default Tag: %s", params.PullRequestNumber, params.DefaultTag)
+}
+
+func main() {
+	root := cobra.Command{}
+
+	root.AddCommand(commands.DoCommand())
+
+	_, err := root.ExecuteC()
+	if err != nil {
+		return
+	}
 }
