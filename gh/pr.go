@@ -22,6 +22,7 @@ func (gh *Client) GetPullRequestLabels(prNumber int, owner, repository string) (
 	pr, err := gh.GetPullRequestByNumber(prNumber, owner, repository)
 
 	if err != nil {
+		return nil, err
 	}
 
 	return pr.Labels, nil
