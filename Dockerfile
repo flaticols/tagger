@@ -11,7 +11,7 @@ RUN apt-get -qq update && \
 WORKDIR /src
 COPY . .
 
-RUN go build -ldflags "-s -w -extldflags '-static'" -o /bin/tagger . && strip /bin/app && upx -q -9 /bin/tagger
+RUN go build -ldflags "-s -w -extldflags '-static'" -o /bin/tagger . && strip /bin/tagger && upx -q -9 /bin/tagger
 RUN echo "nobody:x:65534:65534:Nobody:/:" > /etc_passwd
 
 FROM scratch
