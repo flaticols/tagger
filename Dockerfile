@@ -5,13 +5,10 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64
 
-RUN apt-get -qq update && \
-    apt-get -yqq install upx
-
 WORKDIR /src
 COPY . .
 
-RUN go build -ldflags "-s -w -extldflags '-static'" -o /bin/tagger . && strip /bin/app && upx -q -9 /bin/tagger
+RUN go build -ldflags "-s -w" -o /bin/tagger .
 RUN echo "nobody:x:65534:65534:Nobody:/:" > /etc_passwd
 
 FROM scratch
