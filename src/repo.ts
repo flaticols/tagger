@@ -3,6 +3,7 @@ import * as gh from '@actions/github'
 import {Label, RepositoryTags, SemVerUpdate, getInputs} from './inputs'
 
 const TAG_PATTERN = /v([0-9]+)\.([0-9]+)\.([0-9]+)/gi
+
 const LABELS: {name: string; description: string; color: string}[] = [
   {name: 'Major', description: 'Major version update. Minor and Patch will be reset', color: 'FE9B2B'},
   {name: 'Minor', description: 'Minor version update. Patch will be reset', color: 'C4D174'},
