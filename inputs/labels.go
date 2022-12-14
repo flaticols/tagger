@@ -7,34 +7,26 @@ import (
 	"strings"
 )
 
-const (
-	MajorLabel = "major"
-	MinorLabel = "minor"
-	PatchLabel = "patch"
-)
-
-type SemVerUpdate struct {
+type PullRequestLabels struct {
 	Major  bool
 	Minor  bool
 	Patch  bool
 	Custom string
+
+	Tag *Tag
 }
 
-func GetNextVersionUpdate(labels []*github.Label) SemVerUpdate {
-	sm := SemVerUpdate{
-		Major:  false,
-		Minor:  false,
-		Patch:  false,
-		Custom: "",
-	}
+// GetPRLabels returns a list of labels for a PR
+func GetPRLabels(labels []*github.Label) PullRequestLabels {
+	sm := PullRequestLabels{Major: false, Minor: false, Patch: false}
 
 	for _, label := range labels {
 		name := strings.ToLower(*label.Name)
-		if name == MajorLabel {
+		if name == TagMajorName {
 			sm.Major = true
-		} else if name == MinorLabel {
+		} else if name == TagMinorName {
 			sm.Minor = true
-		} else if name == PatchLabel {
+		} else if name == TagPatchName {
 			sm.Patch = true
 		}
 	}
@@ -42,19 +34,13 @@ func GetNextVersionUpdate(labels []*github.Label) SemVerUpdate {
 	return sm
 }
 
-// GetNewTag returns a new tag based on the current tag and the SemVerUpdate
-func GetNewTag(tag string, ver SemVerUpdate) (string, error) {
-	tagPattern := regexp.MustCompile(`(?P<major>[0-9])\.(?P<minor>[0-9])\.(?P<patch>[0-9])`)
-	customTagPattern := regexp.MustCompile(`tag[\s:\-=](?P<tag>.*)`)
+// GetNewTag returns a new tag based on the current tag and the PullRequestLabels
+func GetNewTag(currentVersion string, prLabels PullRequestLabels) (Tag, error) {
+	tagPattern := regexp.MustCompile(`(?P<major>[0-9]+)\.(?P<minor>[0-9]+)\.(?P<patch>[0-9]+)`)
+	parts := tagPattern.FindStringSubmatch(currentVersion)
 
-	customTag := customTagPattern.FindStringSubmatch(tag)
-	if len(customTag) > 0 {
-		return customTag[1], nil
-	}
+	tag := Tag{}
 
-	parts := tagPattern.FindStringSubmatch(tag)
-
-	paramsMap := Tag{}
 	for i, name := range tagPattern.SubexpNames() {
 		if i > 0 && i <= len(parts) {
 			p, err := strconv.Atoi(parts[i])
@@ -62,24 +48,24 @@ func GetNewTag(tag string, ver SemVerUpdate) (string, error) {
 				return tag, err
 			}
 
-			paramsMap.Set(TagType(name), p)
+			tag.Set(name, p)
 		}
 	}
 
-	if ver.Major {
-		paramsMap.Set(TagMajor, paramsMap.GetMajor()+1)
-		paramsMap.Set(TagMinor, 0)
-		paramsMap.Set(TagPatch, 0)
-
-		return paramsMap.String(), nil
+	if prLabels.Major {
+		tag.SetMajor(tag.GetMajor() + 1)
+		tag.SetMinor(0)
+		tag.SetPatch(0)
+		return tag, nil
 	}
 
-	if ver.Minor {
-		paramsMap.Set(TagMinor, paramsMap.GetMinor()+1)
-		paramsMap.Set(TagPatch, 0)
-		return paramsMap.String(), nil
+	if prLabels.Minor {
+		tag.SetMinor(tag.GetMinor() + 1)
+		tag.SetPatch(0)
+		return tag, nil
 	}
 
-	paramsMap.Set(TagPatch, paramsMap.GetPatch()+1)
-	return paramsMap.String(), nil
+	tag.SetPatch(tag.GetPatch() + 1)
+
+	return tag, nil
 }

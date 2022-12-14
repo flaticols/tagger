@@ -5,15 +5,28 @@ inputs:
   github-token:
     description: The GitHub token used to create an authenticated client.
     required: false
-    default: ${{ action.token }}
+    default: ${{ gh.token }}
   pr-number:
     description: PR number
     required: false
-    default: ${{ action.event.number }}
+    default: ${{ gh.event.number }}
+  prefix:
+    description: Tag prefix
+    required: false
+    default: v
   default-tag:
     description: Default tag
     required: false
-    default: v0.0.0
+    default: 0.0.0
+  major-tag:
+    description: Major tag name
+    default: major
+  minor-tag:
+    description: Minor tag name
+    default: minor
+  patch-tag:
+    description: Patch tag name
+    default: patch
 runs:
   using: docker
   image: Dockerfile

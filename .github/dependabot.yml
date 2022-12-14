@@ -1,6 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: action-actions
+  - package-ecosystem: gh-actions
     directory: /
     schedule:
       interval: daily

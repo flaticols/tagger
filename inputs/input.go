@@ -9,12 +9,14 @@ import (
 
 type Inputs struct {
 	GitHubToken       string
+	Owner             string
+	Repository        string
 	PullRequestNumber int
 	DefaultTag        string
-	TagPattern        string
+	TagPrefix         string
 }
 
-// GetInputs returns the inputs for the action
+// GetInputs returns the inputs for the gh
 func GetInputs() (Inputs, error) {
 	prNumberInput := gha.GetInput("pr-number")
 	prNumber, err := strconv.Atoi(prNumberInput)
@@ -23,10 +25,17 @@ func GetInputs() (Inputs, error) {
 		return Inputs{}, fmt.Errorf("get PR number failed, %w", err)
 	}
 
+	ghaCtx, err := gha.Context()
+	if err != nil {
+		return Inputs{}, fmt.Errorf("get GitHub context failed, %w", err)
+	}
+
 	return Inputs{
-		GitHubToken:       gha.GetInput("action-token"),
+		GitHubToken:       gha.GetInput("github-token"),
+		Repository:        ghaCtx.Repository,
+		Owner:             ghaCtx.RepositoryOwner,
 		PullRequestNumber: prNumber,
 		DefaultTag:        gha.GetInput("default-tag"),
-		TagPattern:        gha.GetInput("tag-pattern"),
+		TagPrefix:         gha.GetInput("prefix"),
 	}, nil
 }
