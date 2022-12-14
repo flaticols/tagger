@@ -78,12 +78,22 @@ const repo = __importStar(__nccwpck_require__(8139));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+	    core.notice("Fetching PR");
             const pr = yield repo.getPR();
+		
+	    core.notice("Fetching required labels");
             const ver = repo.getRequiredLabels(pr.data.labels);
+		
+	    core.notice("Fetching latest tag");
             const tags = yield repo.getLatestTag();
+		
+	    core.notice("Find out new tag");
             const newVersion = repo.getNewTag(ver, tags);
             core.notice(`Next release: v${newVersion}`);
 	    core.setOutput('tag', `v${newVersion}`);
+
+		
+		core.notice(`Creating new release`);
             repo.createRelease(`v${newVersion}`);
         }
         catch (error) {
