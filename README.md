@@ -1,4 +1,4 @@
-# Tagger 0.5.7
+# Tagger 0.6
 
 Creating a new release using the labels from the Pull Requests
 
