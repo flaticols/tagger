@@ -92,7 +92,7 @@ jobs:
 go run . create -o flaticols -r tagger -t $(gh auth token)
 ```
 
-### Use as package
+### Use as package (with cobra only)
 
 ```go
 package main
