@@ -27,6 +27,8 @@ func DoCommand() *cobra.Command {
 
 			params := inputs.Inputs{}
 
+			fmt.Printf("GitHub Actions Params: %+v", params)
+
 			major, _ := flags.GetBool("major")
 			minor, _ := flags.GetBool("minor")
 			patch, _ := flags.GetBool("patch")
