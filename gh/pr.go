@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/go-github/v48/github"
+	"strings"
 )
 
 // GetPullRequestByNumber returns the PR for a given PR number
 func (gh *Client) GetPullRequestByNumber(prNumber int, owner, repository string) (*github.PullRequest, error) {
-	fmt.Printf("Repository: %s, Owner: %s, PR Number: %d", repository, owner, prNumber)
-	pr, _, err := gh.client.PullRequests.Get(context.Background(), "", repository, prNumber)
+	_, repository, _ = strings.Cut(repository, fmt.Sprintf("%s/", owner))
+
+	pr, _, err := gh.client.PullRequests.Get(context.Background(), owner, repository, prNumber)
 
 	if err != nil {
 		return nil, fmt.Errorf("get PR '%d' failed, %w", prNumber, err)
