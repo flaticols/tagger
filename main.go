@@ -8,7 +8,7 @@ import (
 func main() {
 	root := cobra.Command{}
 
-	root.AddCommand(commands.DoCommand())
+	root.AddCommand(commands.CreateCommand())
 
 	_, err := root.ExecuteC()
 	if err != nil {
