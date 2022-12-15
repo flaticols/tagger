@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/google/go-github/v48 v48.2.0
+	github.com/hashicorp/go-version v1.6.0
 	github.com/sethvargo/go-githubactions v1.1.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5

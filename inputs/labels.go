@@ -1,19 +1,24 @@
 package inputs
 
 import (
+	"fmt"
 	"github.com/google/go-github/v48/github"
+	"github.com/hashicorp/go-version"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
-type PullRequestLabels struct {
-	Major  bool
-	Minor  bool
-	Patch  bool
-	Custom string
+var (
+	semVerPreMetaPattern = regexp.MustCompile(`(?P<pre>pre:([a-zA-z0-9\-\\.]+))|(?P<meta>meta:([a-zA-z0-9\-\\.]+))`)
+)
 
-	Tag *Tag
+type PullRequestLabels struct {
+	Major      bool
+	Minor      bool
+	Patch      bool
+	Prerelease string
+	Metadata   string
+	Custom     string
 }
 
 // GetPRLabels returns a list of labels for a PR
@@ -22,50 +27,43 @@ func GetPRLabels(labels []*github.Label) PullRequestLabels {
 
 	for _, label := range labels {
 		name := strings.ToLower(*label.Name)
-		if name == TagMajorName {
+
+		switch name {
+		case "major":
 			sm.Major = true
-		} else if name == TagMinorName {
+		case "minor":
 			sm.Minor = true
-		} else if name == TagPatchName {
+		case "patch":
 			sm.Patch = true
+		case "pre":
+		case "metadata":
 		}
 	}
 
 	return sm
 }
 
-// GetNewTag returns a new tag based on the current tag and the PullRequestLabels
-func GetNewTag(currentVersion string, prLabels PullRequestLabels) (Tag, error) {
-	tagPattern := regexp.MustCompile(`(?P<major>[0-9]+)\.(?P<minor>[0-9]+)\.(?P<patch>[0-9]+)`)
-	parts := tagPattern.FindStringSubmatch(currentVersion)
-
-	tag := Tag{}
-
-	for i, name := range tagPattern.SubexpNames() {
-		if i > 0 && i <= len(parts) {
-			p, err := strconv.Atoi(parts[i])
-			if err != nil {
-				return tag, err
-			}
-
-			tag.Set(name, p)
-		}
+// CreateNewVersion returns a new tag based on the current tag and the PullRequestLabels
+func CreateNewVersion(ver string, prLabels PullRequestLabels) (*version.Version, error) {
+	semver, err := version.NewSemver(ver)
+	if err != nil {
+		return nil, fmt.Errorf("invalid version '%s', %w", ver, err)
 	}
+
+	segs := semver.Segments()
 
 	if prLabels.Major {
-		tag.SetMajor(tag.GetMajor() + 1)
-		tag.SetMinor(0)
-		tag.SetPatch(0)
-		return tag, nil
+		segs[0]++
+		segs[1] = 0
+		segs[2] = 0
+	} else if prLabels.Minor {
+		segs[1]++
+		segs[2] = 0
+	} else if prLabels.Patch {
+		segs[2]++
+
+		return semver, nil
 	}
 
-	if prLabels.Minor {
-		tag.SetMinor(tag.GetMinor() + 1)
-		tag.SetPatch(0)
-		return tag, nil
-	}
-
-	tag.SetPatch(tag.GetPatch() + 1)
-
-	return tag, nil
+	return version.NewVersion(fmt.Sprintf("%d.%d.%d", segs[0], segs[1], segs[2]))
 }
