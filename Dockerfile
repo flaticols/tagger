@@ -19,4 +19,4 @@ COPY --from=builder --chown=65534:0 /bin/tagger /tagger
 
 USER nobody
 ENTRYPOINT ["/tagger"]
-CMD ["do", "--actions"]
+CMD ["create", "--actions"]

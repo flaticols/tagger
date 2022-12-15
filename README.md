@@ -1,4 +1,4 @@
-# Tagger 0.7
+# Tagger 0.8
 
 Creating a new release using the labels from the Pull Requests
 
@@ -16,10 +16,10 @@ Add a one of `major`, `minor` or `path` label to your PR and merge it.
 
 ##### Add `patch` and I have latest tag `v0.4.10`
   Result: release with tag and name `v0.4.11`
-  
+
 ##### Add `Minor` and I have latest tag `v0.4.10`
   Result: release with tag and name `v0.5.0`
-  
+
 ##### Add `Major` and I have latest tag `v0.4.10`
   Result: release with tag and name `v1.0.0`
 
@@ -89,5 +89,25 @@ jobs:
 ### Run locally
 
 ```bash
-go run . do -o flaticols -r tagger -t $(gh auth token)
+go run . create -o flaticols -r tagger -t $(gh auth token)
+```
+
+### Use as package
+
+```go
+package main
+
+import C "github.com/flaticols/tagger/commands"
+
+func main() {
+	root := cobra.Command{}
+
+	root.AddCommand(C.CreateCommand())
+
+	_, err := root.ExecuteC()
+	if err != nil {
+		return
+	}
+}
+
 ```

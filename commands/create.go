@@ -8,9 +8,9 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func DoCommand() *cobra.Command {
+func CreateCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "do",
+		Use:   "create",
 		Short: "Create a release",
 		PreRun: func(cmd *cobra.Command, args []string) {
 			isActions, _ := cmd.Flags().GetBool("actions")
@@ -26,8 +26,6 @@ func DoCommand() *cobra.Command {
 			isActions, _ := flags.GetBool("actions")
 
 			params := inputs.Inputs{}
-
-			fmt.Printf("GitHub Actions Params: %+v", params)
 
 			major, _ := flags.GetBool("major")
 			minor, _ := flags.GetBool("minor")
