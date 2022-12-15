@@ -3,6 +3,7 @@ package inputs
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	gha "github.com/sethvargo/go-githubactions"
 )
@@ -32,7 +33,7 @@ func GetInputs() (Inputs, error) {
 
 	return Inputs{
 		GitHubToken:       gha.GetInput("github-token"),
-		Repository:        ghaCtx.Repository,
+		Repository:        strings.Split(ghaCtx.Repository, "/")[1],
 		Owner:             ghaCtx.RepositoryOwner,
 		PullRequestNumber: prNumber,
 		DefaultTag:        gha.GetInput("default-tag"),
