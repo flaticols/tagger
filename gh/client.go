@@ -3,6 +3,7 @@ package gh
 import (
 	"context"
 	"fmt"
+
 	"github.com/google/go-github/v48/github"
 	"golang.org/x/oauth2"
 )
@@ -25,7 +26,7 @@ func NewGitHubClient(token string) (*Client, error) {
 }
 
 // GetLatestTag returns the latest tag for a given repository
-func (gh *Client) GetLatestTag(owner, repository string) (string, error) {
+func (gh *Client) GetLatestTag(owner, repository string, defaultTag string) (string, error) {
 	tags, _, err := gh.client.Repositories.ListTags(context.Background(), owner, repository, &github.ListOptions{
 		Page:    1,
 		PerPage: 1,
@@ -34,5 +35,9 @@ func (gh *Client) GetLatestTag(owner, repository string) (string, error) {
 		return "", fmt.Errorf("get latest tag failed, %w", err)
 	}
 
-	return tags[0].GetName(), nil
+	if len(tags) == 0 {
+		return defaultTag, nil
+	} else {
+		return tags[0].GetName(), nil
+	}
 }

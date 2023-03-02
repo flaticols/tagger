@@ -7,16 +7,9 @@ ENV GO111MODULE=on \
 
 WORKDIR /src
 COPY . .
-
 RUN go build -ldflags "-s -w" -o /bin/tagger .
-RUN echo "nobody:x:65534:65534:Nobody:/:" > /etc_passwd
 
-FROM scratch
-
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /etc_passwd /etc/passwd
-COPY --from=builder --chown=65534:0 /bin/tagger /tagger
-
-USER nobody
+FROM gcr.io/distroless/static-debian11
+COPY --from=builder /bin/tagger /tagger
 ENTRYPOINT ["/tagger"]
 CMD ["create", "--actions"]

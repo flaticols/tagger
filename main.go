@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/flaticols/tagger/commands"
 	"github.com/spf13/cobra"
 )
@@ -12,6 +14,6 @@ func main() {
 
 	_, err := root.ExecuteC()
 	if err != nil {
-		return
+		os.Exit(1)
 	}
 }

@@ -2,8 +2,10 @@ package commands
 
 import (
 	"fmt"
+
 	"github.com/flaticols/tagger/gh"
 	"github.com/flaticols/tagger/inputs"
+	gha "github.com/sethvargo/go-githubactions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -43,10 +45,8 @@ func CreateCommand() *cobra.Command {
 				if err != nil {
 					return err
 				}
-
 				params = r
 			} else {
-
 				r, err := getRepoInfo(flags)
 				if err != nil {
 					return err
@@ -67,7 +67,7 @@ func CreateCommand() *cobra.Command {
 				verUpd = inputs.GetPRLabels(labels)
 			}
 
-			latestTag, err := client.GetLatestTag(params.Owner, params.Repository)
+			latestTag, err := client.GetLatestTag(params.Owner, params.Repository, params.GetDefaultTag())
 			if err != nil {
 				return fmt.Errorf("failed to get latest tag, %w", err)
 			}
@@ -82,7 +82,9 @@ func CreateCommand() *cobra.Command {
 				return fmt.Errorf("failed to create release, %w", err)
 			}
 
-			return err
+			gha.SetOutput("tag", newTag.String())
+
+			return nil
 		},
 	}
 
