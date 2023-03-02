@@ -27,13 +27,12 @@ inputs:
   patch-tag:
     description: Patch tag name
     default: patch
+outputs:
+  tag:
+    description: 'The newly generated version'
 runs:
   using: docker
   image: Dockerfile
-# runs:
-#   using: 'node16'
-#   main: 'dist/main/index.js'
-#   pre: 'dist/setup/index.js'
 branding:
   icon: 'tag'
   color: 'orange'

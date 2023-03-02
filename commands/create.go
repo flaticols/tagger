@@ -2,8 +2,10 @@ package commands
 
 import (
 	"fmt"
+
 	"github.com/flaticols/tagger/gh"
 	"github.com/flaticols/tagger/inputs"
+	gha "github.com/sethvargo/go-githubactions"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -82,7 +84,9 @@ func CreateCommand() *cobra.Command {
 				return fmt.Errorf("failed to create release, %w", err)
 			}
 
-			return err
+			gha.SetOutput("tag", newTag.String())
+
+			return nil
 		},
 	}
 
