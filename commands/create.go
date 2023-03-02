@@ -77,12 +77,13 @@ func CreateCommand() *cobra.Command {
 				return fmt.Errorf("failed to get new tag, %w", err)
 			}
 
-			_, err = client.CreateRelease(newTag.StringWithPrefix(params.TagPrefix), params.Owner, params.Repository, false, true)
+			newTagString := newTag.StringWithPrefix(params.TagPrefix)
+			_, err = client.CreateRelease(newTagString, params.Owner, params.Repository, false, true)
 			if err != nil {
 				return fmt.Errorf("failed to create release, %w", err)
 			}
 
-			gha.SetOutput("tag", newTag.String())
+			gha.SetOutput("tag", newTagString)
 
 			return nil
 		},

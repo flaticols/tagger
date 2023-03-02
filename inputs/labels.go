@@ -1,10 +1,11 @@
 package inputs
 
 import (
-	"github.com/google/go-github/v48/github"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/google/go-github/v48/github"
 )
 
 type PullRequestLabels struct {
