@@ -10,4 +10,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./
-          github-token:{{ secrets.GH_PAT }}
+        with:
+          github-token: {{ secrets.GH_PAT }}
