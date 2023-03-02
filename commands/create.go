@@ -45,10 +45,8 @@ func CreateCommand() *cobra.Command {
 				if err != nil {
 					return err
 				}
-
 				params = r
 			} else {
-
 				r, err := getRepoInfo(flags)
 				if err != nil {
 					return err
@@ -69,7 +67,7 @@ func CreateCommand() *cobra.Command {
 				verUpd = inputs.GetPRLabels(labels)
 			}
 
-			latestTag, err := client.GetLatestTag(params.Owner, params.Repository)
+			latestTag, err := client.GetLatestTag(params.Owner, params.Repository, params.GetDefaultTag())
 			if err != nil {
 				return fmt.Errorf("failed to get latest tag, %w", err)
 			}

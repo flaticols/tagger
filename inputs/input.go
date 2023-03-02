@@ -40,3 +40,7 @@ func GetInputs() (Inputs, error) {
 		TagPrefix:         gha.GetInput("prefix"),
 	}, nil
 }
+
+func (i Inputs) GetDefaultTag() string {
+	return fmt.Sprintf("%s%s", i.TagPrefix, i.DefaultTag)
+}
